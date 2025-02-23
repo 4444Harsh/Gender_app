@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block bodyblock %}
+<div class="container">
+    {% if fileupload %}
+    <br><br>
+    <h3 class="display-8">Processed Video</h3>
+    <p>Your uploaded video has been processed. See the result below:</p>
+
+    <!-- Video Player -->
+    <iframe width="640" height="480" controls>
+        <source src="{{ video_path }}" type="video/avi">
+        Your browser does not support the video tag.
+    </iframe>
+    <br><br>
+    <a href="{{ url_for('video_upload') }}" class="btn btn-primary">Upload Another Video</a>
+    {% endif %}
+</div>    
+{% endblock %}

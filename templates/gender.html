@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block bodyblock %}
+<div class="container text-center">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <br><br>
+            <h3 class="display-8">Gender Classification</h3>
+            <p>Upload an image or video, or switch to the live video feed for real-time gender detection.</p>
+
+            <!-- Tabs for Image Upload, Video Upload, and Live Video -->
+            <ul class="nav nav-tabs justify-content-center" id="tabMenu">
+                <li class="nav-item">
+                    <a class="nav-link active" id="upload-tab" data-bs-toggle="tab" data-bs-target="#image-upload">Image Upload</a>
+                </li>
+                <!-- 
+                <li class="nav-item">
+                    <a class="nav-link" id="video-upload-tab" data-bs-toggle="tab" data-bs-target="#video-upload">Video Upload</a>
+                </li>-->
+                <li class="nav-item">
+                    <a class="nav-link" id="live-video-tab" data-bs-toggle="tab" data-bs-target="#live-video">Live Video Feed</a>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <!-- Image Upload Tab -->
+                <div class="tab-pane fade show active" id="image-upload">
+                    <br>
+                    <form action="#" method="POST" enctype="multipart/form-data">
+                        <div class="input-group justify-content-center">
+                            <input type="file" class="form-control w-50" name="image_name" accept=".jpg,.jpeg,.png" required>
+                            <input type="submit" value="Upload & Predict" class="btn btn-outline-primary">
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Video Upload Tab 
+                <div class="tab-pane fade" id="video-upload">
+                    <br>
+                    <h3 class="display-8">Video Upload</h3>
+                    <p>Upload a video for gender detection.</p>
+                    <form action="{{ url_for('video_upload') }}" method="POST" enctype="multipart/form-data">
+                        <div class="input-group justify-content-center">
+                            <input type="file" class="form-control w-50" name="video_name" accept=".mp4,.avi,.mov" required>
+                            <input type="submit" value="Upload & Analyze" class="btn btn-outline-primary">
+                        </div>
+                    </form>
+                </div>-->
+
+                <!-- Live Video Feed Tab -->
+                <div class="tab-pane fade" id="live-video">
+                    <br>
+                    <h3 class="display-8">Live Video Feed</h3>
+                    <p>Real-time gender detection from your webcam.</p>
+                    
+                    <button class="btn btn-success" onclick="startVideo()">Start Video Feed</button>
+                    <button class="btn btn-danger" onclick="stopVideo()">Stop Video Feed</button>
+                    <br><br>
+                    <img id="videoStream" class="img-fluid" width="640" height="480" alt="Video will appear here when started">
+                </div>
+            </div>
+        </div>
+        <div class="col-8">
+            {% if fileupload %}
+            <br><br>
+            <h3 class="display-8">Predicted Image</h3>
+            <img src="/static/predict/prediction_image.jpg" class="img-fluid" width="500" alt="">
+            <hr>
+            <br>
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>Detected Face</th>
+                        <th>Eigen Image</th>
+                        <th>Prediction Gender</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for element in report %}
+                    <tr>
+                        <td><img src="/static/predict/{{ element[0] }}" class="img-fluid" height="100" alt=""></td>
+                        <td><img src="/static/predict/{{ element[1] }}" class="img-fluid" height="100" alt=""></td>
+                        <td>{{ element[2] }}</td>
+                        <td>{{ element[3] }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>    
+    </div>
+</div>
+
+<script>
+let videoRunning = false;
+
+// Function to start video feed
+function startVideo() {
+    document.getElementById('videoStream').src = "/video_feed";
+    videoRunning = true;
+}
+
+// Function to stop video feed
+function stopVideo() {
+    document.getElementById('videoStream').src = "";
+    fetch("/stop_video_feed"); // Notify backend to stop the camera
+    videoRunning = false;
+}
+
+// Stop live video feed when switching tabs
+document.querySelectorAll(".nav-link").forEach(tab => {
+    tab.addEventListener("click", function() {
+        if (videoRunning) {
+            stopVideo();
+        }
+    });
+});
+
+</script>
+
+{% endblock %}
